@@ -12,3 +12,31 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+
+  auth-service:
+    build: 
+      context: ./../auth-service
+      dockerfile: ./../auth-service/auth-service.dockerfile
+    restart: always
+    ports:
+      - "8081:80"
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      DSN: "host:postgres port=5432 user=postgres password=root dbname=micro sslmmode=dissable timezone=UTC connect_timeout=5"
+
+  postgres:
+    image: 'postgres:14.0'
+    ports:
+      - "5432:5432"
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: micro
+    volumes:
+      - ./db-data/postgres/:/var/lib/postgresql/data/
